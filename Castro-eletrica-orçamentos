@@ -1,0 +1,158 @@
+<!DOCTYPE html><html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Castro Elétrica - Orçamento Premium Total</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+body { font-family: Arial, sans-serif; background:#121212; color:#fff; padding:20px; }
+.container { max-width:650px; margin:auto; }
+header { text-align:center; margin-bottom:20px; }
+header img { width:120px; margin-bottom:10px; }
+h1 { color:#FFD700; margin:5px 0; font-size:2.2em; }
+h2 { margin-top:25px; border-bottom:2px solid #1E90FF; padding-bottom:5px; font-size:26px; color:#1E90FF; }
+.card { background:#2C2C2C; padding:24px; margin:16px 0; border-radius:16px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 6px 12px rgba(0,0,0,0.3); transition: transform 0.3s, box-shadow 0.3s; font-size:1.88em; }
+.card:hover { transform: translateY(-5px); box-shadow:0 8px 16px rgba(0,0,0,0.5); background:#3A3A3A; }
+.card .left { display:flex; align-items:center; }
+.card .left i { margin-right:16px; color:#FFD700; width:32px; text-align:center;}
+.card input[type="checkbox"] { transform: scale(1.88); margin-right:10px; }
+.card input[type="number"] { width:100px; margin-left:16px; border-radius:6px; border:1px solid #ccc; background:#333; color:#fff; padding:8px; font-size:1.65em; transition:0.2s; }
+.card input[type="number"]:focus { background:#444; }
+.total { margin-top:35px; font-size:36px; font-weight:bold; text-align:center; background:#FFD700; color:#000; padding:18px; border-radius:14px; transition: background 0.3s; }
+.botoes { display:flex; gap:16px; margin-top:24px; }
+button { flex:1; padding:16px; border:none; border-radius:14px; font-size:21px; cursor:pointer; font-weight:bold; transition:0.2s; }
+.whats { background:#1E90FF; color:#fff; }
+.whats:hover { background:#104E8B; }
+.limpar { background:#C0C0C0; color:#000; }
+.limpar:hover { background:#A9A9A9; }
+.contato { text-align:center; margin-top:22px; font-size:20px; color:#ccc; }
+.aviso { text-align:center; margin-top:10px; font-size:18px; color:#FFD700; font-style:italic; }
+.outro-servico { margin-top:26px; background:#1F1F1F; padding:18px; border-radius:14px; font-size:1.65em; }
+input[type="text"], input[type="number"] { width:100%; padding:14px; margin-top:6px; border-radius:6px; border:1px solid #ccc; background:#333; color:#fff; font-size:1.65em; }
+input[type="text"]:focus, input[type="number"]:focus { background:#444; }
+.tooltip { position:relative; display:inline-block; cursor:pointer; }
+.tooltip .tooltiptext { visibility:hidden; width:260px; background-color:#555; color:#fff; text-align:center; border-radius:6px; padding:8px; position:absolute; z-index:1; bottom:125%; left:50%; margin-left:-130px; opacity:0; transition:opacity 0.3s; font-size:1.32em; }
+.tooltip:hover .tooltiptext { visibility:visible; opacity:1; }
+</style>
+</head>
+<body><div class="container">
+<header>
+<img src="https://i.imgur.com/7Qx1Xq5.png" alt="CASTRO ELÉTRICA Logo">
+<h1>⚡ CASTRO ELÉTRICA ⚡</h1>
+<p>Julio Cesar | Eletricista Residencial</p>
+</header><label>👤 Nome do cliente: <input type="text" id="cliente" placeholder="Ex: João Silva"> </label>
+
+<h2>Serviços</h2>
+<div id="servicosLista"></div>
+<p class="aviso">Estes valores são apenas da mão de obra. Caso queira que o serviço e o material sejam fornecidos por minha conta, o valor será maior, devido ao custo do material.</p><div class="outro-servico">
+<h2>➕ Outro serviço</h2>
+<label>Descrição do serviço:
+<input type="text" id="descricaoExtra" placeholder="Ex: Instalação de ventilador de teto">
+</label>
+<label>Valor do serviço (R$):
+<input type="number" id="valorExtra" placeholder="Ex: 150">
+</label>
+<button style="background:#FFD700; color:#000;" onclick="adicionarExtra()">Adicionar ao orçamento</button>
+</div><div class="total" id="totalBox">
+Total: R$ <span id="total">0</span>
+</div><div class="botoes">
+<button class="whats" onclick="enviarWhats()"><i class="fab fa-whatsapp"></i> Enviar no WhatsApp</button>
+<button class="limpar" onclick="limpar()"><i class="fas fa-trash"></i> Limpar</button>
+</div><div class="contato">
+📞 (98) 9 8529-1879<br>
+⚠️ Valores podem variar conforme serviço e material
+</div>
+</div><script>
+const servicos=[
+{nome:"Avaliação no local e orçamento profissional", valor:70, icone:"fas fa-search", tooltip:"Verificação completa no local."},
+{nome:"Troca de tomada ou interruptor", valor:80, icone:"fas fa-plug", tooltip:"Substituição rápida de tomada ou interruptor."},
+{nome:"Instalação de tomada ou interruptor", valor:100, icone:"fas fa-plug", tooltip:"Instalação nova de ponto elétrico."},
+{nome:"Troca de soquete/bocal", valor:70, icone:"fas fa-lightbulb", tooltip:"Substituição de soquetes ou bocal."},
+{nome:"Instalação de luminária simples", valor:100, icone:"fas fa-lightbulb", tooltip:"Instalação de luminárias comuns."},
+{nome:"Instalação de lâmpada com 2 pontos de ligação/desligamento", valor:120, icone:"fas fa-lightbulb", tooltip:"Lâmpadas controladas por 2 pontos."},
+{nome:"Troca de resistência de chuveiro", valor:100, icone:"fas fa-shower", tooltip:"Substituição de resistências de chuveiro."},
+{nome:"Instalação de chuveiro elétrico", valor:120, icone:"fas fa-shower", tooltip:"Instalação de chuveiro elétrico."},
+{nome:"Novo ponto elétrico para chuveiro", valor:200, icone:"fas fa-bolt", tooltip:"Novo ponto de energia para chuveiro."},
+{nome:"Instalação de bóia elétrica", valor:160, icone:"fas fa-water", tooltip:"Instalação de bóia elétrica."},
+{nome:"Instalação de bomba d'água", valor:180, icone:"fas fa-water", tooltip:"Instalação de bomba d'água residencial."},
+{nome:"Troca de disjuntor", valor:120, icone:"fas fa-bolt", tooltip:"Substituição de disjuntores."},
+{nome:"Organização/revisão de quadro", valor:200, icone:"fas fa-cogs", tooltip:"Revisão e organização de quadros elétricos."},
+{nome:"Instalação de quadro de disjuntores", valor:400, icone:"fas fa-cogs", tooltip:"Instalação completa de quadros."},
+{nome:"Novo ponto de tomada ou iluminação", valor:150, icone:"fas fa-plug", tooltip:"Instalação de novo ponto de luz ou tomada."},
+{nome:"Passagem de fiação em conduíte existente", valor:120, icone:"fas fa-project-diagram", tooltip:"Passagem de fios em conduítes."},
+{nome:"Instalação de campainha", valor:150, icone:"fas fa-bell", tooltip:"Instalação de campainha residencial."},
+{nome:"Ligação elétrica de forno ou cooktop", valor:180, icone:"fas fa-fire", tooltip:"Ligação elétrica de forno ou cooktop."},
+{nome:"Parte elétrica para ar-condicionado", valor:200, icone:"fas fa-fan", tooltip:"Parte elétrica de ar-condicionado."},
+{nome:"Identificação de curto-circuito", valor:150, icone:"fas fa-bolt", tooltip:"Diagnóstico de curto-circuitos."},
+{nome:"Manutenção elétrica residencial", valor:120, icone:"fas fa-tools", tooltip:"Manutenção geral da rede elétrica."}
+];
+
+let extras=[];
+
+function renderServicos(){
+ const lista=document.getElementById("servicosLista"); lista.innerHTML="";
+ servicos.forEach((s,i)=>{
+ const div=document.createElement("div"); div.className="card";
+ div.innerHTML=`<div class="left tooltip">
+ <i class="${s.icone}"></i>
+ <input type="checkbox" id="serv${i}" data-nome="${s.nome}" data-valor="${s.valor}" onchange="calcular()">
+ ${s.nome}
+ <span class="tooltiptext">${s.tooltip}</span>
+ </div>
+ <input type="number" id="qtd${i}" min="1" value="1" onchange="calcular()" title="Quantidade">`;
+ lista.appendChild(div);
+ });
+}
+
+renderServicos();
+
+function calcular(){
+ let total=0;
+ servicos.forEach((s,i)=>{
+ const checkbox=document.getElementById(`serv${i}`);
+ const qtd=Number(document.getElementById(`qtd${i}`).value)||1;
+ if(checkbox.checked) total+=s.valor*qtd;
+ });
+ extras.forEach(e=>{ total+=Number(e.valor); });
+ document.getElementById("total").innerText=total;
+}
+
+function adicionarExtra(){
+ const desc=document.getElementById("descricaoExtra").value.trim();
+ const val=Number(document.getElementById("valorExtra").value);
+ if(desc && val>0){
+ extras.push({descricao:desc, valor:val});
+ document.getElementById("descricaoExtra").value="";
+ document.getElementById("valorExtra").value="";
+ calcular();
+ alert(`Serviço "${desc}" adicionado!`);
+ } else alert("Preencha descrição e valor corretamente!");
+}
+
+function enviarWhats(){
+ let cliente=document.getElementById("cliente").value||"Cliente";
+ let mensagem=`Olá, meu nome é ${cliente}. Gostaria de um orçamento:%0A%0A`;
+ let total=0;
+ servicos.forEach((s,i)=>{
+ const checkbox=document.getElementById(`serv${i}`);
+ const qtd=Number(document.getElementById(`qtd${i}`).value)||1;
+ if(checkbox.checked){
+ mensagem+=`- ${s.nome} x${qtd} (R$ ${s.valor*qtd})%0A`;
+ total+=s.valor*qtd;
+ }
+ });
+ extras.forEach(e=>{
+ mensagem+=`- ${e.descricao} (R$ ${e.valor})%0A`;
+ total+=e.valor;
+ });
+ mensagem+=`%0A*Total: R$ ${total}*`;
+ window.open(`https://wa.me/5598985291879?text=${mensagem}`,'_blank');
+}
+
+function limpar(){
+ servicos.forEach((s,i)=>document.getElementById(`serv${i}`).checked=false);
+ document.getElementById("cliente").value="";
+ extras=[];
+ document.getElementById("total").innerText="0";
+}
+</script></body>
+</html>
